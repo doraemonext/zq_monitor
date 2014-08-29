@@ -87,8 +87,8 @@ def getall():
 #武装部 有两个页面
     getannonce("武装部","http://rwb.whu.edu.cn/list.asp?id=49","href","Article.asp","http://rwb.whu.edu.cn/")
     getannonce("武装部","http://rwb.whu.edu.cn/list.asp?id=45","href","Article.asp","http://rwb.whu.edu.cn/")
-#体育部
-    getannonce("体育部","http://nic.whu.edu.cn/","href","m=announce","")
+#网络中心
+    getannonce("网络中心","http://nic.whu.edu.cn/","href","m=announce","")
 #财务部
     getannonce("财务部","http://finance.whu.edu.cn/finance/wenjiantongzhi/wjtz.htm","href","WJTZ","http://finance.whu.edu.cn/finance/wenjiantongzhi/")
 #国交中心
