@@ -1,0 +1,12 @@
+Version 0.1.0
+ - Merge branch 'feature/add_bump_version' into develop
+ - Add: a new file to bump version
+ - Merge branch 'feature/add_readme' into develop
+ - Add: README
+ - Fix: 修正contributors.txt
+ - Add: 添加requirements.txt文件
+ - Add: 添加.gitignore文件
+ - 体育部变更为网络中心
+ - Add
+ - Initial commit with contributors
+
