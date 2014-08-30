@@ -1,3 +1,10 @@
+Version 0.1.2:
+ - Merge branch 'feature/fix_socket_timeout' into develop
+ - Fix: fix socket timeout error
+ - Merge branch 'release/v0.1.1' into develop
+ - Merge branch 'release/v0.1.1'
+ - Merge branch 'release/v0.1.0'
+
 Version 0.1.1:
  - Merge branch 'feature/fix_structure' into develop
  - Refactory: improved getannonce function
