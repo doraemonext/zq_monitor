@@ -9,7 +9,7 @@ import smtplib
 import base64
 reload(sys)  
 sys.setdefaultencoding('utf-8')  
-f=open("urls.txt","r+")
+f=open("urls.txt","w+")
 rawurls=f.readlines()#分行读取文件中的链接并存入列表（链接后有换行符）
 urls=[]
 for url in rawurls:
@@ -61,7 +61,7 @@ def getannonce(name,url_path,comth,comstr,headurl):
                 url_=headurl+url
                 if i.strong:#有些公告是加粗字体
                     mailstr="【"+name+"】有新公告！>>>>"+i.strong.string+"\n\n"+url_ #mailstr中的两个换行符使url_变成正文部分
-                    sendemail(mailstr)         
+                    sendemail(mailstr)
                 else:
                     mailstr="【"+name+"】有新公告！>>>>"+i.string+"\n\n"+url_
                     sendemail(mailstr)
