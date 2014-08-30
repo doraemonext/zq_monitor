@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
 
+import socket
 import urllib2 
 import os
 import sys   
@@ -14,8 +14,6 @@ from email.mime.multipart import MIMEMultipart
 from email.header import Header
 
 
-# reload(sys)
-# sys.setdefaultencoding('utf-8')
 f = open("urls.txt", "w+")
 rawurls = f.readlines()  # 分行读取文件中的链接并存入列表（链接后有换行符）
 urls = []
@@ -37,7 +35,8 @@ def sendemail(subject, content):
     password = "ziqiang@monitor"
 
     sender = "monitor@ziqiang.net"
-    recipients = ["mobile@ziqiang.net", "963949236@qq.com"]
+    #recipients = ["mobile@ziqiang.net", "963949236@qq.com"]
+    recipients = ["doraemonext@gmail.com"]
 
     message = MIMEMultipart()
     message["From"] = sender
@@ -68,11 +67,12 @@ def getannonce(name, url_path, comth, comstr, headurl):
     :param comth: 需要匹配的属性名称
     :param comstr: 需要匹配的属性值
     :param headurl: URL 前缀
-    :return:
     """
     try:
         soup = BeautifulSoup(urllib2.urlopen(url_path, timeout=4))  # 装汤
     except urllib2.HTTPError:
+        pass
+    except socket.error:
         pass
     else:
         a = soup.find_all("a", attrs={comth: re.compile(comstr)})  # 匹配链接
@@ -130,8 +130,8 @@ def getall():
     # 后勤部
     getannonce(u"后勤部", "http://hqbzb.whu.edu.cn/list.aspx?id=28", "href", "ShowArticle.aspx", "http://hqbzb.whu.edu.cn/")
 
-print getall()
-#循环部分
+
+# 循环部分
 try:
     Timer(300000, getall()).start()
 finally:
