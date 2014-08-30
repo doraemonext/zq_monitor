@@ -6,14 +6,12 @@ import os
 import sys   
 import re
 import smtplib
-import mimetypes
 import base64
 from threading import Timer
 from bs4 import BeautifulSoup
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
-from email.mime.image import MIMEImage
 
 
 # reload(sys)
@@ -87,13 +85,13 @@ def getannonce(name, url_path, comth, comstr, headurl):
                 # print url
                 f.write(url)  # 添加链接到文件中
                 f.write("\n")  # 加换行符分行
-                url_ = headurl+url
+                content = headurl+url
                 if i.strong:  # 有些公告是加粗字体
-                    mailstr = u"【"+name+u"】有新公告！>>>>"+i.strong.string+"\n\n"+url_  # mailstr 中的两个换行符使 url_ 变成正文部分
-                    sendemail(mailstr)
+                    subject = u"【{name}】有新公告！>>>>{subject}".format(name=name, subject=i.strong.string)
+                    sendemail(subject, content)
                 else:
-                    mailstr = u"【"+name+u"】有新公告！>>>>"+i.string+"\n\n"+url_
-                    sendemail(mailstr)
+                    subject = u"【{name}】有新公告！>>>>{subject}".format(name=name, subject=i.string)
+                    sendemail(subject, content)
 
 
 def getall():
