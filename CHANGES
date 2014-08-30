@@ -1,3 +1,14 @@
+Version 0.1.1:
+ - Merge branch 'feature/fix_structure' into develop
+ - Refactory: improved getannonce function
+ - Refactory: improved sendmail function
+ - Mod: changed the structure of getannonce.py
+ - Merge branch 'feature/fix_open_urls' into develop
+ - Fix: changed the open mode of urls.txt
+ - Fix: .gitignore file
+ - Merge branch 'release/v0.1.0' into develop
+ - Merge branch 'release/v0.1.0'
+
 Version 0.1.0
  - Merge branch 'feature/add_bump_version' into develop
  - Add: a new file to bump version
