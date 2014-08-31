@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 import socket
 import urllib2 
@@ -35,8 +35,7 @@ def sendemail(subject, content):
     password = "ziqiang@monitor"
 
     sender = "monitor@ziqiang.net"
-    recipients = ["mobile@ziqiang.net", "963949236@qq.com"]
-    #recipients = ["doraemonext@gmail.com"]
+    recipients = ["mobile@ziqiang.net", "963949236@qq.com", "doraemonext@gmail.com"]
 
     message = MIMEMultipart()
     message["From"] = sender
