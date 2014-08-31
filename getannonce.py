@@ -70,9 +70,7 @@ def getannonce(name, url_path, comth, comstr, headurl):
     """
     try:
         soup = BeautifulSoup(urllib2.urlopen(url_path, timeout=4))  # 装汤
-    except urllib2.HTTPError:
-        pass
-    except socket.error:
+    except Exception:
         pass
     else:
         a = soup.find_all("a", attrs={comth: re.compile(comstr)})  # 匹配链接
