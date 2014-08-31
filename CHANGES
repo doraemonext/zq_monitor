@@ -1,3 +1,11 @@
+Version 0.1.3:
+ - Merge branch 'feature/fix_beautifulsoup_exception' into develop
+ - Fix: catch all exceptions
+ - Merge branch 'release/v0.1.2' into develop
+ - Merge branch 'release/v0.1.2'
+ - Merge branch 'release/v0.1.1'
+ - Merge branch 'release/v0.1.0'
+
 Version 0.1.2:
  - Merge branch 'feature/fix_socket_timeout' into develop
  - Fix: fix socket timeout error
