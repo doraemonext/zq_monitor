@@ -14,7 +14,7 @@ from email.mime.multipart import MIMEMultipart
 from email.header import Header
 
 
-f = open("urls.txt", "w+")
+f = open("urls.txt", "r+")
 rawurls = f.readlines()  # 分行读取文件中的链接并存入列表（链接后有换行符）
 urls = []
 for url in rawurls:
@@ -35,8 +35,8 @@ def sendemail(subject, content):
     password = "ziqiang@monitor"
 
     sender = "monitor@ziqiang.net"
-    #recipients = ["mobile@ziqiang.net", "963949236@qq.com"]
-    recipients = ["doraemonext@gmail.com"]
+    recipients = ["mobile@ziqiang.net", "963949236@qq.com"]
+    #recipients = ["doraemonext@gmail.com"]
 
     message = MIMEMultipart()
     message["From"] = sender
