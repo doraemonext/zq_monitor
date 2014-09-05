@@ -35,7 +35,7 @@ def sendemail(subject, content):
     password = "ziqiang@monitor"
 
     sender = "monitor@ziqiang.net"
-    recipients = ["mobile@ziqiang.net", "963949236@qq.com", "doraemonext@gmail.com"]
+    recipients = ["mobile-operation@ziqiang.net", "963949236@qq.com", "doraemonext@gmail.com"]
 
     message = MIMEMultipart()
     message["From"] = sender
