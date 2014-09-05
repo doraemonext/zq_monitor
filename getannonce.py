@@ -126,10 +126,10 @@ def getall():
     getannonce(u"实验部", "http://lab.whu.edu.cn/tzgg/", "href", "tzgg/", "http://lab.whu.edu.cn/")
     # 后勤部
     getannonce(u"后勤部", "http://hqbzb.whu.edu.cn/list.aspx?id=28", "href", "ShowArticle.aspx", "http://hqbzb.whu.edu.cn/")
-
+    try:
+        Timer(1800, getall()).start()
+    finally:
+        pass
 
 # 循环部分
-try:
-    Timer(300000, getall()).start()
-finally:
-    Timer(300000, getall()).start()
+getall()
