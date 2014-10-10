@@ -7,6 +7,7 @@ import sys
 import re
 import smtplib
 import base64
+from xml.etree import ElementTree
 from threading import Timer
 from bs4 import BeautifulSoup
 from email.mime.text import MIMEText
@@ -35,7 +36,7 @@ def sendemail(subject, content):
     password = "ziqiang@monitor"
 
     sender = "monitor@ziqiang.net"
-    recipients = ["mobile@ziqiang.net", "963949236@qq.com", "doraemonext@gmail.com"]
+    recipients = ["mobile-operation@ziqiang.net", "963949236@qq.com", "doraemonext@gmail.com"]
 
     message = MIMEMultipart()
     message["From"] = sender
@@ -91,6 +92,49 @@ def getannonce(name, url_path, comth, comstr, headurl):
                     sendemail(subject, content)
 
 
+def getannonce_xml(name, xurl_path, comth, comstr, headurl):
+    """
+    获取XML公告
+    :param name: 网站名称
+    :param xurl_path: 公告所在网址
+    :param comth: 需要匹配的属性名称
+    :param comstr: 需要匹配的属性值
+    :param headurl: URL 前缀
+    """
+    try:
+        root = ElementTree.parse(urllib2.urlopen(xurl_path, timeout=4)).getroot()  # 获取根节点
+    except Exception:
+        pass
+    else:
+        all_titles = []
+        titles = root.getiterator("title")
+        for title in titles:
+            if title.text and len(title.text) > 5:
+                all_titles.append(title.text)  # 存储标题
+            else:
+                pass
+        link = root.getiterator(comth)  # 匹配链接
+        all_urls = []
+        for i in link:
+            if i.text and len(i.text) > 44:  # 该判断可以过滤掉none,null和一个首页链接
+                all_urls.append(i.text)  # 存储链接
+            else:
+                pass
+        ti_url = {}
+        for i in range(len(all_urls)):
+            ti_url[all_urls[i]] = all_titles[i]  # 标题和链接以字典键值的形式对应
+        for url in all_urls:
+            if url in urls:  # 判断链接是否在列表中
+                pass
+            else:
+                urls.append(url)  # 添加链接到列表中（好像没有用0.0）
+                f.write(str(url))  # 添加链接到文件中
+                f.write("\n")  # 加换行符分行
+                content = headurl + str(url)
+                subject = u"【{name}】有新公告！>>>>{subject}".format(name=name, subject=ti_url[url])
+                sendemail(subject, content)
+
+
 def getall():
     """
     获取所有公告信息
@@ -126,10 +170,12 @@ def getall():
     getannonce(u"实验部", "http://lab.whu.edu.cn/tzgg/", "href", "tzgg/", "http://lab.whu.edu.cn/")
     # 后勤部
     getannonce(u"后勤部", "http://hqbzb.whu.edu.cn/list.aspx?id=28", "href", "ShowArticle.aspx", "http://hqbzb.whu.edu.cn/")
-
+    # 就业指导中心
+    getannonce_xml(u"就业指导中心", "http://xsjy.whu.edu.cn/rss/news_0000101_00001011513.xml", "link", "news", "")
+    try:
+        Timer(1800, getall()).start()
+    finally:
+        pass
 
 # 循环部分
-try:
-    Timer(300000, getall()).start()
-finally:
-    Timer(300000, getall()).start()
+getall()
