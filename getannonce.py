@@ -172,6 +172,8 @@ def getall():
     getannonce(u"后勤部", "http://hqbzb.whu.edu.cn/list.aspx?id=28", "href", "ShowArticle.aspx", "http://hqbzb.whu.edu.cn/")
     # 就业指导中心
     getannonce_xml(u"就业指导中心", "http://xsjy.whu.edu.cn/rss/news_0000101_00001011513.xml", "link", "news", "")
+    #体育部
+    getannonce(u"体育部", "http://www.sports.whu.edu.cn/", "href", "newsinfo.asp", "http://www.sports.whu.edu.cn/")
     try:
         Timer(1800, getall()).start()
     finally:
