@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import socket
-import urllib2 
-import os
-import sys   
+import logging
+import urllib2
 import re
+import os
 import smtplib
-import base64
 from xml.etree import ElementTree
 from threading import Timer
 from bs4 import BeautifulSoup
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
+
+logging.basicConfig(filename=os.path.join(os.getcwd(), 'getannonce.log'), level=logging.DEBUG)
+log = logging.getLogger('root')
 
 
 f = open("urls.txt", "r+")
@@ -53,8 +54,12 @@ def sendemail(subject, content):
     svr.starttls()  # <------ 这行就是新加的支持安全邮件的代码！
     # 发送正文数据
     svr.login(username, password)
-    svr.sendmail(sender, recipients, message.as_string())
-    print u"发送成功"
+    try:
+        svr.sendmail(sender, recipients, message.as_string())
+    except Exception:
+        log.exception('exception')
+    else:
+        print u"发送成功"
     # 发送结束，退出
     svr.quit()
 
@@ -71,7 +76,7 @@ def getannonce(name, url_path, comth, comstr, headurl):
     try:
         soup = BeautifulSoup(urllib2.urlopen(url_path, timeout=4))  # 装汤
     except Exception:
-        pass
+        log.exception('exception')
     else:
         a = soup.find_all("a", attrs={comth: re.compile(comstr)})  # 匹配链接
         for i in a:
@@ -80,7 +85,6 @@ def getannonce(name, url_path, comth, comstr, headurl):
                 pass
             else:
                 urls.append(url)  # 添加链接到列表中（好像没有用0.0）
-                # print url
                 f.write(url)  # 添加链接到文件中
                 f.write("\n")  # 加换行符分行
                 content = headurl+url
@@ -104,7 +108,7 @@ def getannonce_xml(name, xurl_path, comth, comstr, headurl):
     try:
         root = ElementTree.parse(urllib2.urlopen(xurl_path, timeout=4)).getroot()  # 获取根节点
     except Exception:
-        pass
+        log.exception('exception')
     else:
         all_titles = []
         titles = root.getiterator("title")
