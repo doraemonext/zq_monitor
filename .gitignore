@@ -40,5 +40,4 @@ Desktop.ini
 
 .idea
 
-urls.txt
-getannonce.log
+zq_monitor/local_settings.py
