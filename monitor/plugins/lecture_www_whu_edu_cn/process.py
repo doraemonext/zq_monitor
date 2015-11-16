@@ -22,6 +22,7 @@ class Plugin(PluginProcessor):
         resp = self.request(self.url).encode('raw_unicode_escape')
         soup = BeautifulSoup(resp)
         item_list = soup.find_all('td', class_='tzggtitle')[1:]
+        item_list.reverse()
         for item in item_list:
             title = unicode(item.select('a')[0].contents[0])
             url = urljoin(self.url, item.select('a')[0]['href'])
