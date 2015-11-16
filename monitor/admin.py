@@ -32,7 +32,7 @@ class RecordAdmin(admin.ModelAdmin):
 
 
 class RecordQueueAdmin(admin.ModelAdmin):
-    list_display = ['record', 'plugin', 'category', 'user', 'sent']
+    list_display = ['record', 'plugin', 'category', 'user', 'sent', 'timestamp']
 
 
 admin.site.register(Category, CategoryAdmin)

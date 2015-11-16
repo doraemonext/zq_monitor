@@ -87,6 +87,7 @@ class RecordQueue(models.Model):
     category = models.ForeignKey(Category, verbose_name='所属分类')
     user = models.ForeignKey(User, verbose_name='所属用户')
     sent = models.BooleanField('发送状态', default=False)
+    timestamp = models.DateTimeField('记录日期', auto_now_add=True)
 
     def __unicode__(self):
         return self.record.url + ' ' + self.user.email

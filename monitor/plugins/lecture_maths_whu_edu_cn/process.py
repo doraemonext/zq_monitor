@@ -21,7 +21,7 @@ class Plugin(PluginProcessor):
     def process(self):
         resp = self.request(self.url).encode('raw_unicode_escape')
         soup = BeautifulSoup(resp)
-        item_list = soup.find_all('td', class_='tzggtitle')[1:]
+        item_list = soup.find_all('td', attrs={'align': 'left', 'height': '33'})
         item_list.reverse()
         for item in item_list:
             title = unicode(item.select('a')[0].contents[0])
@@ -32,6 +32,6 @@ class Plugin(PluginProcessor):
             except PluginRequestError:
                 logger.warning('Cannot access url: %s' % url)
                 continue
-            content = unicode(content_soup.find('form', attrs={'name': '_newscontent_fromname'}))
+            content = unicode(content_soup.find('div', attrs={'class': 'content_text'}))
             record = Record.objects.add_record(url=url, title=title, content=content, postdate=postdate)
             send_message(record=record, plugin=self.plugin_instance)
