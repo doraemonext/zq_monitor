@@ -14,4 +14,6 @@ class Plugin(PluginProcessor):
     url = 'http://www.whu.edu.cn/tzgg.htm'
 
     def process(self):
-        return self.request(Plugin.url)
+        resp = self.request(Plugin.url)
+        print resp.encode('raw_unicode_escape')
+        return resp
