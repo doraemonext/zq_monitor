@@ -28,7 +28,7 @@ class User(models.Model):
     category = models.ManyToManyField(Category, verbose_name='监视分类')
 
     def __unicode__(self):
-        return self.nickname + ' ' + self.email
+        return self.nickname + ' (' + self.email + ')'
 
     class Meta:
         db_table = 'monitor_user'
@@ -53,25 +53,27 @@ class Plugin(models.Model):
 
 
 class RecordManager(models.Manager):
-    def add_record(self, url, content):
+    def add_record(self, url, title, content, postdate):
         try:
-            obj = self.create(url=url, content=content)
+            obj = self.create(url=url, title=title, content=content, postdate=postdate)
             logger.info('Inserted record: %s' % url)
             return obj
         except IntegrityError:
             logger.info('Repeated record: %s' % url)
-            pass
+            return self.get(url=url)
 
 
 class Record(models.Model):
     url = models.CharField('URL', max_length=255, unique=True, db_index=True)
+    title = models.CharField('标题', max_length=255)
     content = models.TextField('网页内容')
+    postdate = models.CharField('发布时间', max_length=255)
     timestamp = models.DateTimeField('记录日期', auto_now_add=True)
 
     objects = RecordManager()
 
     def __unicode__(self):
-        return self.url
+        return self.title
 
     class Meta:
         db_table = 'monitor_record'

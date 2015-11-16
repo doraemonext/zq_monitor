@@ -10,7 +10,7 @@ from requests.exceptions import RequestException
 
 from monitor.plugins.base import PluginManager
 from monitor.models import Plugin
-from monitor.plugins.exceptions import PluginException
+from monitor.plugins.exceptions import PluginException, PluginRequestError
 
 from monitor.models import Record, RecordQueue
 from zq_monitor.celery import app
@@ -28,16 +28,17 @@ def send_email(self, mail_sub, mail_message, to_list, record_id):
                 "from": u"自强信使 <mailgun@sandboxb76ec3927a684f8194c2083ff587de40.mailgun.org>",
                 "to": to_list,
                 "subject": mail_sub,
-                "text": mail_message
+                "html": mail_message
             }
         )
     except RequestException, socket.timeout:
-        logger.error(u'Timeout: cannot send email message with subject "%s" and content "%s"' % (mail_sub, mail_message))
+        logger.error(u'Timeout: cannot send email message with subject "%s"' % mail_sub)
         return
 
     if r.status_code != requests.codes.ok:
-        logger.error(u'Error %s: cannot send email message with subject "%s" and content "%s"' % (r.text, mail_sub, mail_message))
-    logger.info(u'Successfully sent message: %s' % mail_message)
+        logger.error(u'Error %s: cannot send email message with subject "%s"' % (r.text, mail_sub))
+    logger.info(u'Successfully sent message: %s' % mail_sub)
+
     record_queue = RecordQueue.objects.get(pk=record_id)
     record_queue.sent = True
     record_queue.save()
@@ -46,8 +47,10 @@ def send_email(self, mail_sub, mail_message, to_list, record_id):
 @app.task(bind=True)
 def send_message(self, record, plugin):
     category = plugin.category
-    user_set = category.user_set
+    user_set = category.user_set.all()
     for user in user_set:
+        if RecordQueue.objects.filter(record=record, plugin=plugin, user=user).exists():
+            continue
         record_queue = RecordQueue.objects.create(
             record=record,
             plugin=plugin,
@@ -56,8 +59,8 @@ def send_message(self, record, plugin):
             sent=False
         )
         send_email.apply_async(kwargs={
-            'mail_sub': '[%s][%s] %s',
-            'mail_message': record.content,
+            'mail_sub': u'【%s】【%s】%s' % (category.name, record.postdate, record.title),
+            'mail_message': '<h3>原文链接: <a href="%s">%s</a></h3><br/><br/>' % (record.url, record.url) + record.content,
             'to_list': [user.email],
             'record_id': record_queue.pk,
         }, routing_key='email')
@@ -71,6 +74,8 @@ def run(self):
         plugin_instance = plugin['class'](iden=plugin['iden'], dir=plugin['dir'])
         try:
             plugin_instance.process()
+        except PluginRequestError:
+            logger.warning('Cannot access plugin %s main url' % plugin['iden'])
         except PluginException:
             logger.exception(u'Error when process plugin %s' % plugin['iden'])
     logger.info('Successfully ran monitor')

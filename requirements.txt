@@ -2,4 +2,5 @@ Django==1.8.5
 beautifulsoup4==4.3.2
 requests==2.8.1
 celery==3.1.19
+django-celery==3.1.17
 colorlog==2.6.0
