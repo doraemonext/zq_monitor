@@ -59,7 +59,7 @@ def send_message(self, record, plugin):
             sent=False
         )
         send_email.apply_async(kwargs={
-            'mail_sub': u'【%s】【%s】%s' % (category.name, record.postdate, record.title),
+            'mail_sub': u'【%s】【%s】【%s】%s' % (category.name, plugin.name, record.postdate, record.title),
             'mail_message': '<h3>原文链接: <a href="%s">%s</a></h3><br/><br/>' % (record.url, record.url) + record.content,
             'to_list': [user.email],
             'record_id': record_queue.pk,
