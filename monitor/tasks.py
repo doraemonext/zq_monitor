@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import logging
 import socket
 
 import requests
 from requests.exceptions import RequestException
+
+from monitor.plugins.base import PluginManager
+from monitor.plugins.exceptions import PluginException
 
 from zq_monitor.celery import app
 
@@ -33,3 +36,16 @@ def send_message(self, mail_sub, mail_message, to_list):
     if r.status_code != requests.codes.ok:
         logger.error(u'Error %s: cannot send email message with subject "%s" and content "%s"' % (r.text, mail_sub, mail_message))
     logger.info(u'Successfully sent message: %s' % mail_message)
+
+
+@app.task(bind=True)
+def run(self):
+    manager = PluginManager()
+    manager.load_plugins()
+    for plugin in manager.plugins:
+        plugin_instance = plugin()
+        try:
+            plugin_instance.process()
+        except PluginException:
+            logger.exception(u'Error when process plugin %s' % plugin_instance.name)
+    logger.info('Successfully ran monitor')

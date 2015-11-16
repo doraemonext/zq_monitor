@@ -2,7 +2,12 @@
 
 from __future__ import absolute_import, unicode_literals
 
+import logging
+
 from django.db import models
+from django.db.utils import IntegrityError
+
+logger = logging.getLogger(__name__)
 
 
 class Category(models.Model):
@@ -45,10 +50,22 @@ class Plugin(models.Model):
         verbose_name_plural = '插件'
 
 
+class RecordManager(models.Manager):
+    def add_record(self, url, content):
+        try:
+            self.create(url=url, content=content)
+            logger.info('Inserted record: %s' % url)
+        except IntegrityError:
+            logger.info('Repeated record: %s' % url)
+            pass
+
+
 class Record(models.Model):
     url = models.CharField('URL', max_length=255, unique=True, db_index=True)
     content = models.TextField('网页内容')
     timestamp = models.DateTimeField('记录日期', auto_now_add=True)
+
+    objects = RecordManager()
 
     def __unicode__(self):
         return self.url
