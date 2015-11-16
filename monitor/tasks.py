@@ -12,13 +12,14 @@ from monitor.plugins.base import PluginManager
 from monitor.models import Plugin
 from monitor.plugins.exceptions import PluginException
 
+from monitor.models import Record, RecordQueue
 from zq_monitor.celery import app
 
 logger = logging.getLogger(__name__)
 
 
 @app.task(bind=True)
-def send_message(self, mail_sub, mail_message, to_list):
+def send_email(self, mail_sub, mail_message, to_list, record_id):
     try:
         r = requests.post(
             url="https://api.mailgun.net/v3/sandboxb76ec3927a684f8194c2083ff587de40.mailgun.org/messages",
@@ -37,6 +38,29 @@ def send_message(self, mail_sub, mail_message, to_list):
     if r.status_code != requests.codes.ok:
         logger.error(u'Error %s: cannot send email message with subject "%s" and content "%s"' % (r.text, mail_sub, mail_message))
     logger.info(u'Successfully sent message: %s' % mail_message)
+    record_queue = RecordQueue.objects.get(pk=record_id)
+    record_queue.sent = True
+    record_queue.save()
+
+
+@app.task(bind=True)
+def send_message(self, record, plugin):
+    category = plugin.category
+    user_set = category.user_set
+    for user in user_set:
+        record_queue = RecordQueue.objects.create(
+            record=record,
+            plugin=plugin,
+            category=category,
+            user=user,
+            sent=False
+        )
+        send_email.apply_async(kwargs={
+            'mail_sub': '[%s][%s] %s',
+            'mail_message': record.content,
+            'to_list': [user.email],
+            'record_id': record_queue.pk,
+        }, routing_key='email')
 
 
 @app.task(bind=True)
@@ -48,5 +72,5 @@ def run(self):
         try:
             plugin_instance.process()
         except PluginException:
-            logger.exception(u'Error when process plugin %s' % plugin_instance.name)
+            logger.exception(u'Error when process plugin %s' % plugin['iden'])
     logger.info('Successfully ran monitor')

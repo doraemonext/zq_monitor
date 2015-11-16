@@ -17,6 +17,8 @@ from __future__ import absolute_import, unicode_literals
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+from kombu import Exchange, Queue
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -110,6 +112,120 @@ STATIC_URL = '/static/'
 # Custom settings
 
 MONITOR_DEFAULT_TIMEOUT = 5
+
+# Celery settings
+
+BROKER_URL = 'redis://'
+CELERY_RESULT_BACKEND = 'redis://'
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
+CELERY_TASK_RESULT_EXPIRES = 3600
+CELERY_QUEUES = (
+    Queue('email', routing_key='email'),
+)
+# CELERYD_TASK_TIME_LIMIT = 20
+# CELERYBEAT_SCHEDULE = {
+#     'update_system_debug_token': {
+#         'task': 'system.debug_token.tasks.rebuild_debug_token',
+#         'schedule': datetime.timedelta(hours=24),
+#     },
+# }
+CELERY_TIMEZONE = 'Asia/Shanghai'
+
+# LOGGING
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s [%(name)s:%(funcName)s:%(lineno)d] [%(threadName)s:%(thread)d] [%(levelname)s] - %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'simple': {
+            'format': '%(log_color)s[%(name)s:%(funcName)s:%(lineno)d] %(levelname)s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'simple_with_console': {
+            '()': 'colorlog.ColoredFormatter',
+            'format': '%(log_color)s[%(name)s:%(funcName)s:%(lineno)d] %(levelname)s %(message)s',
+            'log_colors': {
+                'DEBUG': 'bold_black',
+                'INFO': 'white',
+                'WARNING': 'yellow',
+                'ERROR': 'red',
+                'CRITICAL': 'bold_red',
+            },
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        }
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple_with_console',
+            'filters': ['require_debug_true'],
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'verbose',
+            'filters': ['require_debug_false']
+        },
+        'django': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
+            'formatter': 'verbose',
+            'filters': ['require_debug_true'],
+        },
+        'request': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/request.log'),
+            'formatter': 'verbose',
+        },
+        'debug': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
+            'formatter': 'verbose',
+            'filters': ['require_debug_true'],
+        },
+        'monitor': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/monitor.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'mail_admins', 'django'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'django.request': {
+            'handlers': ['console', 'mail_admins', 'request'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'monitor': {
+            'handlers': ['console', 'mail_admins', 'debug', 'monitor'],
+            'level': 'DEBUG',
+        },
+    }
+}
 
 # Import local files
 

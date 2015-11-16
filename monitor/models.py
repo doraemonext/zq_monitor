@@ -55,8 +55,9 @@ class Plugin(models.Model):
 class RecordManager(models.Manager):
     def add_record(self, url, content):
         try:
-            self.create(url=url, content=content)
+            obj = self.create(url=url, content=content)
             logger.info('Inserted record: %s' % url)
+            return obj
         except IntegrityError:
             logger.info('Repeated record: %s' % url)
             pass
