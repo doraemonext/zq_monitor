@@ -10,10 +10,8 @@ __all__ = ['Plugin']
 
 
 class Plugin(PluginProcessor):
-    name = '武汉大学主页讲座抓取'
-    url = 'http://www.whu.edu.cn/tzgg.htm'
 
     def process(self):
-        resp = self.request(Plugin.url)
+        resp = self.request(self.url)
         print resp.encode('raw_unicode_escape')
         return resp

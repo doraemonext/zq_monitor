@@ -9,6 +9,7 @@ import requests
 from requests.exceptions import RequestException
 
 from monitor.plugins.base import PluginManager
+from monitor.models import Plugin
 from monitor.plugins.exceptions import PluginException
 
 from zq_monitor.celery import app
@@ -43,7 +44,7 @@ def run(self):
     manager = PluginManager()
     manager.load_plugins()
     for plugin in manager.plugins:
-        plugin_instance = plugin()
+        plugin_instance = plugin['class'](iden=plugin['iden'], dir=plugin['dir'])
         try:
             plugin_instance.process()
         except PluginException:

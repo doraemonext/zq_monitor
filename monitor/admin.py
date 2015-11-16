@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import, unicode_literals
+
 from django.contrib import admin
 
 from monitor.models import Category, User, Plugin, Record, RecordQueue
@@ -14,7 +16,7 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class PluginAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['name', 'category', 'iden', 'url', 'status']
 
 
 class RecordAdmin(admin.ModelAdmin):

@@ -14,6 +14,7 @@ from django.conf import settings
 import requests
 from requests.exceptions import RequestException
 
+from monitor.models import Plugin
 from monitor.plugins.exceptions import PluginRequestError
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,11 @@ logger = logging.getLogger(__name__)
 class PluginProcessor(object):
     """ 爬取插件基类 """
 
-    url = None
+    def __init__(self, iden, dir):
+        self.plugin_instance = Plugin.objects.get(iden=iden)
+        self.iden = iden
+        self.dir = dir
+        self.url = self.plugin_instance.url
 
     def process(self):
         raise NotImplementedError('You must implement process() method in plugin')
@@ -54,15 +59,16 @@ class PluginManager(object):
         logger.debug('Start loading plugin from directory')
 
         plugins = []
-        try:
-            for filename in os.listdir(self.__directory):
+        plugins_list = Plugin.objects.filter(status=True).values()
+        for plugin in plugins_list:
+            filename = plugin['iden']
+            try:
                 full_path = os.path.join(self.__directory, filename)
                 if os.path.isdir(full_path) and os.path.exists(os.path.join(full_path, "process.py")):
                     plugins.append((filename, self.__directory))
-        except OSError:
-            logger.exception('Load plugins error: Failed to access plugin file')
+            except OSError:
+                logger.exception('Load plugins error: Failed to access plugin file')
 
-        print 'Plugins ', plugins
         fh = None
         mod = None
         for (iden, dir) in plugins:
@@ -81,6 +87,10 @@ class PluginManager(object):
                 attrs = [getattr(mod, x) for x in mod.__all__]
                 for plug in attrs:
                     if issubclass(plug, PluginProcessor):
-                        self.__plugins.append(plug)
+                        self.__plugins.append({
+                            'iden': iden,
+                            'dir': dir,
+                            'class': plug,
+                        })
 
         logger.debug('Finished loading plugin from directory')

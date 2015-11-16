@@ -39,7 +39,9 @@ class User(models.Model):
 class Plugin(models.Model):
     category = models.ForeignKey(Category, verbose_name='插件分类')
     name = models.CharField('插件名称', max_length=64)
-    iden = models.CharField('标识符(插件文件名)', max_length=255)
+    iden = models.CharField('标识符(插件目录)', max_length=255)
+    url = models.CharField('抓取URL', max_length=255)
+    status = models.BooleanField('启用该插件', default=False)
 
     def __unicode__(self):
         return self.name
