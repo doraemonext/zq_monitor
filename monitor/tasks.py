@@ -9,10 +9,9 @@ import requests
 from requests.exceptions import RequestException
 
 from monitor.plugins.base import PluginManager
-from monitor.models import Plugin
 from monitor.plugins.exceptions import PluginException, PluginRequestError
 
-from monitor.models import Record, RecordQueue
+from monitor.models import RecordQueue
 from zq_monitor.celery import app
 
 logger = logging.getLogger(__name__)
@@ -42,28 +41,6 @@ def send_email(self, mail_sub, mail_message, to_list, record_id):
     record_queue = RecordQueue.objects.get(pk=record_id)
     record_queue.sent = True
     record_queue.save()
-
-
-@app.task(bind=True)
-def send_message(self, record, plugin):
-    category = plugin.category
-    user_set = category.user_set.all()
-    for user in user_set:
-        if RecordQueue.objects.filter(record=record, plugin=plugin, user=user).exists():
-            continue
-        record_queue = RecordQueue.objects.create(
-            record=record,
-            plugin=plugin,
-            category=category,
-            user=user,
-            sent=False
-        )
-        send_email.apply_async(kwargs={
-            'mail_sub': u'【%s】【%s】【%s】%s' % (category.name, plugin.name, record.postdate, record.title),
-            'mail_message': '<h3>原文链接: <a href="%s">%s</a></h3><br/><br/>' % (record.url, record.url) + record.content,
-            'to_list': [user.email],
-            'record_id': record_queue.pk,
-        }, routing_key='email')
 
 
 @app.task(bind=True)

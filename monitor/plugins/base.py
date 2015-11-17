@@ -3,8 +3,6 @@
 from __future__ import absolute_import, unicode_literals
 
 import logging
-import traceback
-import time
 from imp import find_module, load_module, acquire_lock, release_lock
 import os
 import sys
@@ -13,9 +11,11 @@ from django.conf import settings
 
 import requests
 from requests.exceptions import RequestException
+from bs4 import BeautifulSoup
 
 from monitor.models import Plugin
 from monitor.plugins.exceptions import PluginRequestError
+from monitor.models import Record
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,54 @@ class PluginProcessor(object):
         self.url = self.plugin_instance.url
 
     def process(self):
-        raise NotImplementedError('You must implement process() method in plugin')
+        item_list = self.get_item_list()
+        item_list.reverse()
+        for item in item_list:
+            title = self.get_title(item)
+            url = self.get_url(item)
+            postdate = self.get_postdate(item)
+            try:
+                content = self.get_content(url)
+            except PluginRequestError:
+                logger.warning('Cannot access url: %s' % url)
+                continue
+            self.insert_record(url=url, title=title, postdate=postdate, content=content)
+
+    @staticmethod
+    def decode_text(text):
+        return text.encode('raw_unicode_escape')
+
+    def get_fulltext(self):
+        return self.decode_text(self.request(self.url))
+
+    def get_soup(self):
+        return BeautifulSoup(self.get_fulltext())
+
+    def get_item_list(self):
+        return self.get_soup().find_all('td')
+
+    def get_title(self, item):
+        raise NotImplementedError('You must implement get_title() method in plugin')
+
+    def get_url(self, item):
+        raise NotImplementedError('You must implement get_url() method in plugin')
+
+    def get_postdate(self, item):
+        raise NotImplementedError('You must implement get_postdate() method in plugin')
+
+    def get_content_fulltext(self, url):
+        return self.decode_text(self.request(url))
+
+    def get_content_soup(self, url):
+        return BeautifulSoup(self.get_content_fulltext(url))
+
+    def get_content(self, url):
+        raise NotImplementedError('You must implement get_content() method in plugin')
+
+    def insert_record(self, url, title, content, postdate):
+        from monitor.utils import send_message  # 解决循环导入问题
+        record = Record.objects.add_record(url=url, title=title, content=content, postdate=postdate)
+        send_message(record=record, plugin=self.plugin_instance)
 
     @staticmethod
     def request(url, timeout=settings.MONITOR_DEFAULT_TIMEOUT):

@@ -9,7 +9,7 @@ from urlparse import urljoin
 from monitor.models import Record
 from monitor.plugins.base import PluginProcessor
 from monitor.plugins.exceptions import PluginRequestError
-from monitor.tasks import send_message
+from monitor.utils import send_message
 
 __all__ = ['Plugin']
 
@@ -18,20 +18,21 @@ logger = logging.getLogger(__name__)
 
 class Plugin(PluginProcessor):
 
-    def process(self):
-        resp = self.request(self.url).encode('raw_unicode_escape').decode('gbk')
-        soup = BeautifulSoup(resp)
-        item_list = soup.find('div', class_='listmb').find_all('li')
-        item_list.reverse()
-        for item in item_list:
-            title = unicode(item.select('a')[0].contents[0]).strip()
-            url = urljoin(self.url, item.select('a')[0]['href'])
-            postdate = unicode(item.select('span')[0].contents[0])
-            try:
-                content_soup = BeautifulSoup(self.request(url).encode('raw_unicode_escape').decode('gbk'))
-            except PluginRequestError:
-                logger.warning('Cannot access url: %s' % url)
-                continue
-            content = unicode(content_soup.find('div', attrs={'class': 'showb'}))
-            record = Record.objects.add_record(url=url, title=title, content=content, postdate=postdate)
-            send_message(record=record, plugin=self.plugin_instance)
+    @staticmethod
+    def decode_text(text):
+        return text.encode('raw_unicode_escape').decode('gbk')
+
+    def get_item_list(self):
+        return self.get_soup().find('div', class_='listmb').find_all('li')
+
+    def get_title(self, item):
+        return unicode(item.select('a')[0].contents[0]).strip()
+
+    def get_url(self, item):
+        return urljoin(self.url, item.select('a')[0]['href'])
+
+    def get_postdate(self, item):
+        return unicode(item.select('span')[0].contents[0])
+
+    def get_content(self, url):
+        return unicode(self.get_content_soup(url).find('div', attrs={'class': 'showb'}))
