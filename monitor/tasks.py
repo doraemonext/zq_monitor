@@ -21,10 +21,10 @@ logger = logging.getLogger(__name__)
 def send_email(self, mail_sub, mail_message, to_list, record_id):
     try:
         r = requests.post(
-            url="https://api.mailgun.net/v3/sandboxb76ec3927a684f8194c2083ff587de40.mailgun.org/messages",
+            url="https://api.mailgun.net/v3/mail.doraemonext.com/messages",
             auth=("api", "key-c035c61e9760229b7c5620068a836532"),
             data={
-                "from": u"自强信使 <mailgun@sandboxb76ec3927a684f8194c2083ff587de40.mailgun.org>",
+                "from": u"自强信使 <messenger@mail.doraemonext.com>",
                 "to": to_list,
                 "subject": mail_sub,
                 "html": mail_message
