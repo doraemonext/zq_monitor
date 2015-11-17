@@ -113,7 +113,7 @@ STATIC_URL = '/static/'
 
 # Custom settings
 
-MONITOR_DEFAULT_TIMEOUT = 5
+MONITOR_DEFAULT_TIMEOUT = 10
 
 # Celery settings
 

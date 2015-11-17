@@ -91,6 +91,8 @@ class PluginProcessor(object):
             return
         if not content:
             content = '外部链接, 请打开上述网址'
+        if not postdate:
+            postdate = ''
 
         from monitor.utils import send_message  # 解决循环导入问题
         record = Record.objects.add_record(url=url, title=title, content=content, postdate=postdate)

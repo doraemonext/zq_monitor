@@ -10,6 +10,10 @@ from monitor.tasks import send_email
 logger = logging.getLogger(__name__)
 
 
+def add_bracket(text):
+    return '【' + text + '】'
+
+
 def send_message(record, plugin):
     category = plugin.category
     user_set = category.user_set.all()
@@ -24,7 +28,12 @@ def send_message(record, plugin):
             sent=False
         )
         send_email.apply_async(kwargs={
-            'mail_sub': u'【%s】【%s】【%s】%s' % (category.name, plugin.name, record.postdate, record.title),
+            'mail_sub': '%s%s%s%s' % (
+                add_bracket(category.name),
+                add_bracket(plugin.name),
+                add_bracket(record.postdate) if record.postdate else '',
+                record.title,
+            ),
             'mail_message': '<h3>原文链接: <a href="%s">%s</a></h3><br/><br/>' % (record.url, record.url) + record.content,
             'to_list': [user.email],
             'record_id': record_queue.pk,
