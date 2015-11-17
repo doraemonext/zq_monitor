@@ -23,6 +23,8 @@ logger = logging.getLogger(__name__)
 class PluginProcessor(object):
     """ 爬取插件基类 """
 
+    DEBUG = False  # 是否对本插件开启 DEBUG 模式
+
     def __init__(self, iden, dir):
         self.plugin_instance = Plugin.objects.get(iden=iden)
         self.iden = iden
@@ -32,16 +34,26 @@ class PluginProcessor(object):
     def process(self):
         item_list = self.get_item_list()
         item_list.reverse()
+        if self.DEBUG:
+            logger.debug('Plugin iden %s: ' % self.plugin_instance.iden)
         for item in item_list:
             title = self.get_title(item)
+            if self.DEBUG:
+                logger.debug('\tTitle: %s' % title)
             url = self.get_url(item)
+            if self.DEBUG:
+                logger.debug('\tURL: %s' % url)
             postdate = self.get_postdate(item)
+            if self.DEBUG:
+                logger.debug('\tPostdate: %s' % postdate)
             try:
                 content = self.get_content(url)
             except PluginRequestError:
                 logger.warning('Cannot access url: %s' % url)
                 continue
             self.insert_record(url=url, title=title, postdate=postdate, content=content)
+            if self.DEBUG:
+                logger.debug('-----------------------------')
 
     @staticmethod
     def decode_text(text):
@@ -75,6 +87,9 @@ class PluginProcessor(object):
         raise NotImplementedError('You must implement get_content() method in plugin')
 
     def insert_record(self, url, title, content, postdate):
+        if self.DEBUG:
+            return
+
         from monitor.utils import send_message  # 解决循环导入问题
         record = Record.objects.add_record(url=url, title=title, content=content, postdate=postdate)
         send_message(record=record, plugin=self.plugin_instance)

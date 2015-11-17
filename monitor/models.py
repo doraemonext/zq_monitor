@@ -59,7 +59,6 @@ class RecordManager(models.Manager):
             logger.info('Inserted record: %s' % url)
             return obj
         except IntegrityError:
-            logger.info('Repeated record: %s' % url)
             return self.get(url=url)
 
 

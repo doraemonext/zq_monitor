@@ -213,7 +213,7 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'mail_admins', 'django'],
+            'handlers': ['mail_admins', 'django'],
             'propagate': True,
             'level': 'DEBUG',
         },
