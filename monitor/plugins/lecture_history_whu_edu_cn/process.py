@@ -32,4 +32,4 @@ class Plugin(PluginProcessor):
         return unicode(item.find('span', attrs={'class': 'time'}).contents[0])
 
     def get_content(self, url):
-        return unicode(self.get_content_soup(url).find('div', attrs={'class': 'right_xx'}).find('tbody'))
+        return unicode(self.get_content_soup(url).find('div', attrs={'class': 'right_xx'}))
