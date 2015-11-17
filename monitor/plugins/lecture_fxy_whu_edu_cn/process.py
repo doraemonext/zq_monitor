@@ -36,4 +36,4 @@ class Plugin(PluginProcessor):
         if content:
             return unicode(content)
         else:
-            return '外部链接, 请打开上述网址'
+            return None

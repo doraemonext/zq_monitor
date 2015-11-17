@@ -32,4 +32,8 @@ class Plugin(PluginProcessor):
         return unicode(item.find_next('td').contents[0])
 
     def get_content(self, url):
-        return unicode(self.get_content_soup(url).find_all('div', attrs={'id': 'newscontent'})[1])
+        try:
+            return unicode(self.get_content_soup(url).find_all('div', attrs={'id': 'newscontent'})[1])
+        except Exception as e:
+            logger.exception('Error when get content from lecture_bio_whu_edu_cn plugin, url: %s' % url)
+            return None

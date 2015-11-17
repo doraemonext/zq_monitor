@@ -89,6 +89,8 @@ class PluginProcessor(object):
     def insert_record(self, url, title, content, postdate):
         if self.DEBUG:
             return
+        if not content:
+            content = '外部链接, 请打开上述网址'
 
         from monitor.utils import send_message  # 解决循环导入问题
         record = Record.objects.add_record(url=url, title=title, content=content, postdate=postdate)
