@@ -16,11 +16,15 @@ logger = logging.getLogger(__name__)
 class Plugin(PluginProcessor):
 
     @staticmethod
-    def decode_text(text):
+    def decode_title_text(text):
         return text
 
+    @staticmethod
+    def decode_content_text(text):
+        return text.encode('raw_unicode_escape')
+
     def get_item_list(self):
-        return self.get_soup().find_all('a', attrs={'class': 'c9967'})
+        return self.get_soup(decode_func=Plugin.decode_title_text).find_all('a', attrs={'class': 'c9967'})
 
     def get_title(self, item):
         return unicode(item.contents[0]).strip()
@@ -32,5 +36,5 @@ class Plugin(PluginProcessor):
         return None
 
     def get_content(self, url):
-        soup = self.get_content_soup(url)
+        soup = self.get_content_soup(url, decode_func=Plugin.decode_content_text)
         return unicode(soup.find('div', attrs={'id': 'vsb_newscontent'}))
