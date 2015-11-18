@@ -10,8 +10,13 @@ from monitor.models import Category, User, Plugin, Record, RecordQueue
 
 def init_monitor_table(sender, **kwargs):
     category_lecture = Category.objects.create(name='讲座')
-    lecture_user = User.objects.create(nickname='掌上武大讲座', email='zswd_lecture@126.com')
-    lecture_user.category.add(category_lecture)
+    category_notify = Category.objects.create(name='通知')
+    category_movie = Category.objects.create(name='电影')
+
+    monitor_user = User.objects.create(nickname='自强抓取邮箱', email='zq_monitor@126.com')
+    monitor_user.category.add(category_lecture)
+    monitor_user.category.add(category_notify)
+    monitor_user.category.add(category_movie)
 
     Plugin.objects.create(category=category_lecture, name='武大官网', iden='lecture_www_whu_edu_cn', url='http://www.whu.edu.cn/tzgg.htm', status=True)
     Plugin.objects.create(category=category_lecture, name='数学与统计学院', iden='lecture_maths_whu_edu_cn', url='http://maths.whu.edu.cn/kexueyanjiu/xueshujiangzuo/', status=True)
@@ -42,6 +47,21 @@ def init_monitor_table(sender, **kwargs):
     Plugin.objects.create(category=category_lecture, name='水利水电学院', iden='lecture_swrh_whu_edu_cn', url='http://swrh.whu.edu.cn/Notices/', status=True)
     Plugin.objects.create(category=category_lecture, name='电子信息学院', iden='lecture_eis_whu_edu_cn', url='http://eis.whu.edu.cn/channels/94.html', status=True)
     Plugin.objects.create(category=category_lecture, name='测绘学院', iden='lecture_sgg_whu_edu_cn', url='http://main.sgg.whu.edu.cn/keyan/kyhd/', status=True)
+
+    Plugin.objects.create(category=category_movie, name='梅操电影', iden='movie_vhost_whu_edu_cn', url='http://vhost.whu.edu.cn/gh/xywh.php?Class_Type=0&Class_ID=42', status=True)
+
+    Plugin.objects.create(category=category_notify, name='武大官网', iden='notify_whu_edu_cn', url='http://www.whu.edu.cn/tzgg.htm', status=True)
+    Plugin.objects.create(category=category_notify, name='保卫部', iden='notify_sub_whu_edu_cn', url='http://sub.whu.edu.cn/protect/gzdt/', status=True)
+    Plugin.objects.create(category=category_notify, name='考试中心', iden='notify_exam_whu_edu_cn', url='http://exam.whu.edu.cn/News/zhks/', status=True)
+    Plugin.objects.create(category=category_notify, name='一站式', iden='notify_yzs_whu_edu_cn', url='http://yzs.whu.edu.cn/article/?s=信息发布', status=True)
+    Plugin.objects.create(category=category_notify, name='学工部', iden='notify_xgb_whu_edu_cn', url='http://xgb.whu.edu.cn/list.asp?id=45', status=True)
+    Plugin.objects.create(category=category_notify, name='校医院', iden='notify_hospital_whu_edu_cn', url='http://hospital.whu.edu.cn/tiltelist.aspx?Newstype=1', status=True)
+    Plugin.objects.create(category=category_notify, name='武装部1', iden='notify_rwb_whu_edu_cn_1', url='http://rwb.whu.edu.cn/list.asp?id=49', status=True)
+    Plugin.objects.create(category=category_notify, name='武装部2', iden='notify_rwb_whu_edu_cn_2', url='http://rwb.whu.edu.cn/list.asp?id=45', status=True)
+    Plugin.objects.create(category=category_notify, name='网络中心', iden='notify_nic_whu_edu_cn', url='http://nic.whu.edu.cn/list.jsp?urltype=tree.TreeTempUrl&wbtreeid=9382', status=True)
+    Plugin.objects.create(category=category_notify, name='国际交流部', iden='notify_oir_whu_edu_cn', url='http://oir.whu.edu.cn/list/?33_1.html', status=True)
+    Plugin.objects.create(category=category_notify, name='后勤保障部', iden='notify_hqbzb_whu_edu_cn', url='http://hqbzb.whu.edu.cn/tzgg.htm', status=True)
+    Plugin.objects.create(category=category_notify, name='实验室与设备管理处', iden='notify_lab_whu_edu_cn', url='http://lab.whu.edu.cn/tzgg/', status=True)
 
 
 class MonitorAppConfig(AppConfig):

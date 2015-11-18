@@ -1,6 +1,6 @@
 # 自强抓取工具
 
-已实现抓取的讲座有:
+## 讲座抓取
 
 * 武大官网 lecture_www_whu_edu_cn http://www.whu.edu.cn/tzgg.htm
 * 数学与统计学院 lecture_maths_whu_edu_cn http://maths.whu.edu.cn/kexueyanjiu/xueshujiangzuo/ 
@@ -32,26 +32,30 @@
 * 电子信息学院 lecture_eis_whu_edu_cn http://eis.whu.edu.cn/channels/94.html 
 * 测绘学院 lecture_sgg_whu_edu_cn http://main.sgg.whu.edu.cn/keyan/kyhd/ 
 
-===================================================
+## 电影抓取
 
-* 武大官网 http://www.whu.edu.cn/tzgg.htm
-* 电影消息 http://vhost.whu.edu.cn/gh/xywh.php?Class_Type=0&Class_ID=42
-* 教务部 http://jwb.whu.edu.cn/infocenter.aspx
-* 保卫部 http://sub.whu.edu.cn/protect/gzdt/
-* 考试中心 http://exam.whu.edu.cn/News/zhks/
-* 一站式 http://yzs.whu.edu.cn/article/?s=%E4%BF%A1%E6%81%AF%E5%8F%91%E5%B8%83 挂掉了
-* 学工部 http://xgb.whu.edu.cn/list.asp?id=45
-* 校医院 http://hospital.whu.edu.cn/tiltelist.aspx?Newstype=1
-* 武装部 http://rwb.whu.edu.cn/list.asp?id=49
-        http://rwb.whu.edu.cn/list.asp?id=45
-* 网络中心 http://nic.whu.edu.cn/
-* 财务部 http://finance.whu.edu.cn/finance/wenjiantongzhi/wjtz.htm 挂掉了
-* 国交中心 http://oir.whu.edu.cn/list/?33_1.html
-* 就业指导中心 http://www.xsjy.whu.edu.cn/zxtg/ 网址改变，待修改
-* 实验部 http://lab.whu.edu.cn/tzgg/
-* 后勤部 http://hqbzb.whu.edu.cn/list.aspx?id=28
+* 梅操电影 movie_vhost_whu_edu_cn http://vhost.whu.edu.cn/gh/xywh.php?Class_Type=0&Class_ID=42
 
-## ChangeLog
+## 通知抓取
+
+* 武大官网 notify_whu_edu_cn http://www.whu.edu.cn/tzgg.htm
+* 保卫部 notify_sub_whu_edu_cn http://sub.whu.edu.cn/protect/gzdt/
+* 考试中心 notify_exam_whu_edu_cn http://exam.whu.edu.cn/News/zhks/
+* 一站式 notify_yzs_whu_edu_cn http://yzs.whu.edu.cn/article/?s=信息发布
+* 学工部 notify_xgb_whu_edu_cn http://xgb.whu.edu.cn/list.asp?id=45
+* 校医院 notify_hospital_whu_edu_cn http://hospital.whu.edu.cn/tiltelist.aspx?Newstype=1
+* 武装部1 notify_rwb_whu_edu_cn_1 http://rwb.whu.edu.cn/list.asp?id=49
+* 武装部2 notify_rwb_whu_edu_cn_2 http://rwb.whu.edu.cn/list.asp?id=45
+* 网络中心 notify_nic_whu_edu_cn http://nic.whu.edu.cn/list.jsp?urltype=tree.TreeTempUrl&wbtreeid=9382
+* 国际交流部 notify_oir_whu_edu_cn http://oir.whu.edu.cn/list/?33_1.html
+* 后勤保障部 notify_hqbzb_whu_edu_cn http://hqbzb.whu.edu.cn/tzgg.htm
+* 实验室与设备管理处 notify_lab_whu_edu_cn http://lab.whu.edu.cn/tzgg/
+
+# ChangeLog
+
+### v0.3.2
+
+* 添加通知抓取和电影抓取插件
 
 ### v0.3.1
 

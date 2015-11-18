@@ -65,11 +65,14 @@ class PluginProcessor(object):
     def decode_text(text):
         return text.encode('raw_unicode_escape')
 
-    def get_fulltext(self):
-        return self.decode_text(self.request(self.url))
+    def get_fulltext(self, decode_func=None):
+        if decode_func:
+            return decode_func(self.request(self.url))
+        else:
+            return self.decode_text(self.request(self.url))
 
-    def get_soup(self):
-        return BeautifulSoup(self.get_fulltext())
+    def get_soup(self, decode_func=None):
+        return BeautifulSoup(self.get_fulltext(decode_func))
 
     def get_item_list(self):
         return self.get_soup().find_all('td')
@@ -83,11 +86,14 @@ class PluginProcessor(object):
     def get_postdate(self, item):
         raise NotImplementedError('You must implement get_postdate() method in plugin')
 
-    def get_content_fulltext(self, url):
-        return self.decode_text(self.request(url))
+    def get_content_fulltext(self, url, decode_func=None):
+        if decode_func:
+            return decode_func(self.request(url))
+        else:
+            return self.decode_text(self.request(url))
 
-    def get_content_soup(self, url):
-        return BeautifulSoup(self.get_content_fulltext(url))
+    def get_content_soup(self, url, decode_func=None):
+        return BeautifulSoup(self.get_content_fulltext(url, decode_func))
 
     def get_content(self, url):
         raise NotImplementedError('You must implement get_content() method in plugin')
