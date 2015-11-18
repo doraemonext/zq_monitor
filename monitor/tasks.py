@@ -7,11 +7,12 @@ import socket
 
 import requests
 from requests.exceptions import RequestException
+from django.core.cache import cache
 
 from monitor.plugins.base import PluginManager
 from monitor.plugins.exceptions import PluginException, PluginRequestError
-
 from monitor.models import RecordQueue
+from monitor.utils import TaskLock
 from zq_monitor.celery import app
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,11 @@ def send_email(self, mail_sub, mail_message, to_list, record_id):
 
 @app.task(bind=True)
 def run(self):
+    if TaskLock.is_duplicate():
+        logger.warning('Duplicate task, abort now')
+        return
+
+    TaskLock.lock()
     manager = PluginManager()
     manager.load_plugins()
     for plugin in manager.plugins:
@@ -55,4 +61,5 @@ def run(self):
             logger.warning('Cannot access plugin %s main url' % plugin['iden'])
         except PluginException:
             logger.exception(u'Error when process plugin %s' % plugin['iden'])
+    TaskLock.unlock()
     logger.info('Successfully ran monitor')

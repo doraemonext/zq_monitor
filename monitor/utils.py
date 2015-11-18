@@ -4,8 +4,9 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 
+from django.core.cache import cache
+
 from monitor.models import RecordQueue
-from monitor.tasks import send_email
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,7 @@ def send_message(record, plugin):
             user=user,
             sent=False
         )
+        from monitor.tasks import send_email
         send_email.apply_async(kwargs={
             'mail_sub': '%s%s%s%s' % (
                 add_bracket(category.name),
@@ -39,3 +41,24 @@ def send_message(record, plugin):
             'record_id': record_queue.pk,
         }, routing_key='email')
         logger.info('Sent message: [%s][%s][%s]' % (plugin.iden, record.title, record.url))
+
+
+class TaskLock(object):
+
+    key = 'zq_monitor_lock'
+    timeout = 3600
+
+    @staticmethod
+    def is_duplicate():
+        if cache.get(TaskLock.key):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def lock():
+        cache.set(TaskLock.key, True, TaskLock.timeout)
+
+    @staticmethod
+    def unlock():
+        cache.delete(TaskLock.key)

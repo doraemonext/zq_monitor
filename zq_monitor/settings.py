@@ -16,6 +16,7 @@ from __future__ import absolute_import, unicode_literals
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import datetime
 
 from kombu import Exchange, Queue
 
@@ -91,6 +92,12 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -113,7 +120,7 @@ STATIC_URL = '/static/'
 
 # Custom settings
 
-MONITOR_DEFAULT_TIMEOUT = 10
+MONITOR_DEFAULT_TIMEOUT = 5
 
 # Celery settings
 
@@ -123,15 +130,15 @@ CELERY_DEFAULT_QUEUE = 'default'
 CELERY_DEFAULT_ROUTING_KEY = 'default'
 CELERY_TASK_RESULT_EXPIRES = 3600
 CELERY_QUEUES = (
+    Queue('default', routing_key='default'),
     Queue('email', routing_key='email'),
 )
-# CELERYD_TASK_TIME_LIMIT = 20
-# CELERYBEAT_SCHEDULE = {
-#     'update_system_debug_token': {
-#         'task': 'system.debug_token.tasks.rebuild_debug_token',
-#         'schedule': datetime.timedelta(hours=24),
-#     },
-# }
+CELERYBEAT_SCHEDULE = {
+    'run_task': {
+        'task': 'monitor.tasks.run',
+        'schedule': datetime.timedelta(minutes=10),
+    },
+}
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
 # LOGGING
