@@ -15,10 +15,10 @@ def add_bracket(text):
     return '【' + text + '】'
 
 
-def send_message(record, plugin, force=False):
+def send_message(record, plugin):
     category = plugin.category
     user_set = category.user_set.all()
-    if not force and RecordQueue.objects.filter(record=record, plugin=plugin).exists():
+    if RecordQueue.objects.filter(record=record, plugin=plugin).exists():
         return
 
     record_queue_list = []
@@ -51,6 +51,26 @@ def send_message(record, plugin, force=False):
         record.title,
         record.url
     ))
+
+
+def resend_fail_record(record_queue):
+    record = record_queue.record
+    plugin = record_queue.plugin
+    category = record_queue.category
+    user = record_queue.user
+
+    from monitor.tasks import send_email
+    send_email.apply_async(kwargs={
+        'mail_sub': '%s%s%s%s' % (
+            add_bracket(category.name),
+            add_bracket(plugin.name),
+            add_bracket(record.postdate) if record.postdate else '',
+            record.title,
+        ),
+        'mail_message': '<h3>原文链接: <a href="%s">%s</a></h3><br/><br/>' % (record.url, record.url) + record.content,
+        'to_list': [user.email],
+        'record_id_list': [record_queue.pk],
+    }, routing_key='email')
 
 
 class TaskLock(object):
