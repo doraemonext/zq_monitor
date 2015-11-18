@@ -12,7 +12,7 @@ from django.conf import settings
 from monitor.plugins.base import PluginManager
 from monitor.plugins.exceptions import PluginException, PluginRequestError
 from monitor.models import RecordQueue
-from monitor.utils import TaskLock
+from monitor.utils import TaskLock, send_message
 from zq_monitor.celery import app
 
 logger = logging.getLogger(__name__)
@@ -63,5 +63,23 @@ def run(self):
         except PluginException:
             logger.exception(u'Error when process plugin %s' % plugin['iden'])
         logger.info('Finished plugin %s' % plugin['iden'])
+
     TaskLock.unlock()
     logger.info('Successfully ran monitor')
+
+
+@app.task(bind=True)
+def maintain_fail_mail(self):
+    if TaskLock.is_duplicate():
+        logger.warning('Conflict task, abort now')
+        return
+
+    TaskLock.lock()
+    logger.info('Starting maintain fail mail record...')
+    record_queue = RecordQueue.objects.filter(sent=False)
+    for item in record_queue:
+        send_message(item.record, item.plugin, force=True)
+        logger.info('Resend mail record %s to %s' % (item.record.title, item.user.email))
+
+    TaskLock.unlock()
+    logger.info('Finished maintain fail mail record.')
