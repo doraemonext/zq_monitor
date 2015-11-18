@@ -23,8 +23,19 @@ class UserAdmin(admin.ModelAdmin):
     get_categories.short_description = '监视分类'
 
 
+def enable_plugin(modeladmin, request, queryset):
+    queryset.update(status=True)
+enable_plugin.short_description = '启用选中插件'
+
+
+def disable_plugin(modeladmin, request, queryset):
+    queryset.update(status=False)
+disable_plugin.short_description = '禁用选中插件'
+
+
 class PluginAdmin(admin.ModelAdmin):
     list_display = ['name', 'category', 'iden', 'url', 'status']
+    actions = [enable_plugin, disable_plugin]
 
 
 class RecordAdmin(admin.ModelAdmin):

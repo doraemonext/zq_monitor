@@ -50,3 +50,14 @@
 * 就业指导中心 http://www.xsjy.whu.edu.cn/zxtg/ 网址改变，待修改
 * 实验部 http://lab.whu.edu.cn/tzgg/
 * 后勤部 http://hqbzb.whu.edu.cn/list.aspx?id=28
+
+## ChangeLog
+
+### v0.3.1
+
+* 优化邮件发送方式, 提升效率
+* 添加管理后台插件批量管理方式
+
+### v0.3
+
+* 新版本发布, 支持插件

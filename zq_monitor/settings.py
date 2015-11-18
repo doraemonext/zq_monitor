@@ -122,6 +122,11 @@ STATIC_URL = '/static/'
 
 MONITOR_DEFAULT_TIMEOUT = 5
 
+# Email settings
+
+MAIL_URL = 'https://api.mailgun.net/v3/mail.doraemonext.com/messages'
+MAIL_APIKEY = 'key-c035c61e9760229b7c5620068a836532'
+
 # Celery settings
 
 BROKER_URL = 'redis://'

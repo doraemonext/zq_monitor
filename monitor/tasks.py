@@ -7,6 +7,7 @@ import socket
 
 import requests
 from requests.exceptions import RequestException
+from django.conf import settings
 
 from monitor.plugins.base import PluginManager
 from monitor.plugins.exceptions import PluginException, PluginRequestError
@@ -18,11 +19,11 @@ logger = logging.getLogger(__name__)
 
 
 @app.task(bind=True)
-def send_email(self, mail_sub, mail_message, to_list, record_id):
+def send_email(self, mail_sub, mail_message, to_list, record_id_list):
     try:
         r = requests.post(
-            url="https://api.mailgun.net/v3/mail.doraemonext.com/messages",
-            auth=("api", "key-c035c61e9760229b7c5620068a836532"),
+            url=settings.MAIL_URL,
+            auth=("api", settings.MAIL_APIKEY),
             data={
                 "from": u"自强信使 <messenger@mail.doraemonext.com>",
                 "to": to_list,
@@ -38,9 +39,10 @@ def send_email(self, mail_sub, mail_message, to_list, record_id):
         logger.error(u'Error %s: cannot send email message with subject "%s"' % (r.text, mail_sub))
     logger.info(u'Successfully sent message: %s' % mail_sub)
 
-    record_queue = RecordQueue.objects.get(pk=record_id)
-    record_queue.sent = True
-    record_queue.save()
+    for record_id in record_id_list:
+        record_queue = RecordQueue.objects.get(pk=record_id)
+        record_queue.sent = True
+        record_queue.save()
 
 
 @app.task(bind=True)
