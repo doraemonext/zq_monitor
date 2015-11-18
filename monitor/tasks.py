@@ -12,7 +12,7 @@ from django.conf import settings
 from monitor.plugins.base import PluginManager
 from monitor.plugins.exceptions import PluginException, PluginRequestError
 from monitor.models import RecordQueue
-from monitor.utils import TaskLock, send_message
+from monitor.utils import TaskLock, resend_fail_record
 from zq_monitor.celery import app
 
 logger = logging.getLogger(__name__)
@@ -78,7 +78,7 @@ def maintain_fail_mail(self):
     logger.info('Starting maintain fail mail record...')
     record_queue = RecordQueue.objects.filter(sent=False)
     for item in record_queue:
-        send_message(item.record, item.plugin, force=True)
+        resend_fail_record(item)
         logger.info('Resend mail record %s to %s' % (item.record.title, item.user.email))
 
     TaskLock.unlock()
