@@ -7,6 +7,7 @@ import socket
 
 import requests
 from requests.exceptions import RequestException
+from django.conf import settings
 
 from monitor.plugins.base import PluginManager
 from monitor.plugins.exceptions import PluginException, PluginRequestError
@@ -21,8 +22,8 @@ logger = logging.getLogger(__name__)
 def send_email(self, mail_sub, mail_message, to_list, record_id):
     try:
         r = requests.post(
-            url="https://api.mailgun.net/v3/mail.doraemonext.com/messages",
-            auth=("api", "key-c035c61e9760229b7c5620068a836532"),
+            url=settings.MAIL_URL,
+            auth=("api", settings.MAIL_APIKEY),
             data={
                 "from": u"自强信使 <messenger@mail.doraemonext.com>",
                 "to": to_list,
