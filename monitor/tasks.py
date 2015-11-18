@@ -61,5 +61,6 @@ def run(self):
             logger.warning('Cannot access plugin %s main url' % plugin['iden'])
         except PluginException:
             logger.exception(u'Error when process plugin %s' % plugin['iden'])
+        logger.info('Finished plugin %s' % plugin['iden'])
     TaskLock.unlock()
     logger.info('Successfully ran monitor')

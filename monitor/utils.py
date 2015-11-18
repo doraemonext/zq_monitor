@@ -40,7 +40,7 @@ def send_message(record, plugin):
             'to_list': [user.email],
             'record_id': record_queue.pk,
         }, routing_key='email')
-        logger.info('Sent message: [%s][%s][%s]' % (plugin.iden, record.title, record.url))
+        logger.info('Sent message to %s: [%s][%s][%s]' % (user.email, plugin.iden, record.title, record.url))
 
 
 class TaskLock(object):

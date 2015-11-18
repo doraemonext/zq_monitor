@@ -62,6 +62,9 @@ class RecordManager(models.Manager):
             logger.info('Skip record: %s' % url)
             return self.get(url=url)
 
+    def is_existed(self, url):
+        return self.filter(url=url).exists()
+
 
 class Record(models.Model):
     url = models.CharField('URL', max_length=255, unique=True, db_index=True)

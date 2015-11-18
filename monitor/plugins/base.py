@@ -46,12 +46,18 @@ class PluginProcessor(object):
             postdate = self.get_postdate(item)
             if self.DEBUG:
                 logger.debug('\tPostdate: %s' % postdate)
-            try:
-                content = self.get_content(url)
-            except PluginRequestError:
-                logger.warning('Cannot access url: %s' % url)
-                continue
-            self.insert_record(url=url, title=title, postdate=postdate, content=content)
+
+            record = Record.objects.filter(url=url)
+            if not record.exists():
+                try:
+                    content = self.get_content(url)
+                except PluginRequestError:
+                    logger.warning('Cannot access url: %s' % url)
+                    continue
+                self.insert_record(url=url, title=title, postdate=postdate, content=content)
+            else:
+                self.insert_record(record=record[0])
+
             if self.DEBUG:
                 logger.debug('-----------------------------')
 
@@ -86,15 +92,19 @@ class PluginProcessor(object):
     def get_content(self, url):
         raise NotImplementedError('You must implement get_content() method in plugin')
 
-    def insert_record(self, url, title, content, postdate):
+    def insert_record(self, url=None, title=None, content=None, postdate=None, record=None):
         if self.DEBUG:
             return
+
+        from monitor.utils import send_message  # 解决循环导入问题
+        if record:
+            send_message(record=record, plugin=self.plugin_instance)
+            return
+
         if not content:
             content = '外部链接, 请打开上述网址'
         if not postdate:
             postdate = ''
-
-        from monitor.utils import send_message  # 解决循环导入问题
         record = Record.objects.add_record(url=url, title=title, content=content, postdate=postdate)
         send_message(record=record, plugin=self.plugin_instance)
 
