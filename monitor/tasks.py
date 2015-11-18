@@ -7,7 +7,6 @@ import socket
 
 import requests
 from requests.exceptions import RequestException
-from django.core.cache import cache
 
 from monitor.plugins.base import PluginManager
 from monitor.plugins.exceptions import PluginException, PluginRequestError
