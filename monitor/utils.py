@@ -15,10 +15,10 @@ def add_bracket(text):
     return '【' + text + '】'
 
 
-def send_message(record, plugin):
+def send_message(record, plugin, force=False):
     category = plugin.category
     user_set = category.user_set.all()
-    if RecordQueue.objects.filter(record=record, plugin=plugin).exists():
+    if not force and RecordQueue.objects.filter(record=record, plugin=plugin).exists():
         return
 
     record_queue_list = []

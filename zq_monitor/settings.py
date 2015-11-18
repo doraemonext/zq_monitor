@@ -143,6 +143,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'monitor.tasks.run',
         'schedule': datetime.timedelta(minutes=10),
     },
+    'maintain_fail_mail': {
+        'task': 'monitor.tasks.maintain_fail_mail',
+        'schedule': datetime.timedelta(minutes=93),
+    }
 }
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
