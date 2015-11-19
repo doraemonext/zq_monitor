@@ -60,7 +60,7 @@ def run(self):
             plugin_instance.process()
         except PluginRequestError:
             logger.warning('Cannot access plugin %s main url' % plugin['iden'])
-        except PluginException:
+        except Exception:
             logger.exception(u'Error when process plugin %s' % plugin['iden'])
         logger.info('Finished plugin %s' % plugin['iden'])
 

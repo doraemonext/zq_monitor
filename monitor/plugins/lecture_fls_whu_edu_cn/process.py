@@ -6,6 +6,7 @@ import logging
 from urlparse import urljoin
 
 from monitor.plugins.base import PluginProcessor
+from monitor.plugins.exceptions import PluginRequestError
 
 
 __all__ = ['Plugin']
@@ -20,7 +21,11 @@ class Plugin(PluginProcessor):
         return text
 
     def get_item_list(self):
-        return self.get_soup().find('div', attrs={'class': 'nei-right'}).find_all('li')
+        item_list = self.get_soup().find('div', attrs={'class': 'nei-right'})
+        if item_list:
+            return item_list.find_all('li')
+        else:
+            raise PluginRequestError()
 
     def get_title(self, item):
         return unicode(item.select('a')[0].contents[0]).strip()
